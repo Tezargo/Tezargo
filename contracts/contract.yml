@@ -1,0 +1,59 @@
+Name: Contract Deploy and Test
+Description: Deploy a very simple Contract
+Variables:
+  - Name: contractSource
+    Type: Address
+    Default: bootstrap1
+    Description: Source of the newly originated Contract
+  - Name: contractName
+    Type: String
+    Default: intStorage
+    Description: name of the contract ( in Wallet )
+  - Name: transactionSource
+    Type: Address
+    Default: bootstrap1
+    Description: Sender of the Transaction
+  - Name: setStorage
+    Type: Integer
+    Default: 1337
+    Description: new Contract Storage
+Tasks:
+
+  - Log:
+      - This Task will deploy and call a Contract
+      - This is the Hello-World of Blockchian :)
+
+  - Name: Deploy Contract
+    Command:
+      - tezos-client originate contract {{contractName}} transferring 1 from {{contractSource}} running /tplus/contracts/intStore.tz -init 0 --burn-cap 5 --force
+    Register: deploy
+    Blocking: false
+
+  - Name: "Bake"
+    WaitBlocks: 1
+
+  - Name: Check if contract was actually deplyoed
+    IsSet: deploy.contract
+
+  - Name: Lets check the storage for our contract
+    Command:
+      - tezos-client get contract storage for {{contractName}}
+    Timeout: 5
+
+  - Name: Lets set the Storage to a new value
+    Command:
+      - tezos-client transfer 0 from {{transactionSource}} to {{contractName}} --arg {{setStorage}} --burn-cap 1
+    Blocking: false
+    Register: setOperation
+
+  - Name: "Bake"
+    WaitBlocks: 1
+
+  - Name: Lets check the storage for our contract again
+    Command:
+      - tezos-client get contract storage for {{contractName}}
+    Timeout: 5
+
+  - Log:
+      - "The contract was deployed in Operation: deploy.op_hash"
+      - "and has the Address: deploy.contract"
