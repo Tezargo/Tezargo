@@ -1,0 +1,19 @@
+Name: Senden
+Description: Token versenden
+Tasks:
+  - Name: Balance check
+    Command:
+      - tezos-client get balance for bootstrap1
+    Register: balance1
+
+  - Name: Send tezos
+    Command:
+      - tezos-client transfer 100 from bootstrap1 to bootstrap2
+    Blocking: false
+
+  - Name: "Bake"
+    WaitBlocks: 1
+
+  - Name: Balance check
+    Command:
+      - tezos-client get balance for bootstrap1

@@ -1,0 +1,21 @@
+Name: Variables Test
+Description: How to use Task Variables
+Tasks:
+  - Log:
+      - This Task illustrates how to use Variables in Tplus
+      - Variables are stored for different Tasls if they have the `Register`keyword
+      - Lets look at an example of a simple transfer
+
+  - Name: Send tezos
+    Command:
+      - tezos-client transfer 100 from bootstrap1 to bootstrap2
+    Blocking: false
+    Register: transfer
+    HideLog: true
+
+  - Name: "Bake"
+    WaitBlocks: 1
+
+  - Log:
+    - The hash of that transactionw as {{transfer.op_hash}}
+    - and it was included in {{transfer.included_block}}
